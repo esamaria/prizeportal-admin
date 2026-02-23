@@ -17,7 +17,7 @@ function AdminPanel() {
   }, []);
 
   const fetchEvents = () => {
-    axios.get("http://localhost:8081/api/events")
+    axios.get("https://prizeportal-admin-production.up.railway.app/api/events")
       .then(res => setEvents(res.data))
       .catch(err => console.error(err));
   };
@@ -61,13 +61,13 @@ function AdminPanel() {
     };
 
     if (editId) {
-      axios.put(`http://localhost:8081/api/events/${editId}`, cleanData)
+      axios.put(`https://prizeportal-admin-production.up.railway.app/api/events/${editId}`, cleanData)
         .then(() => {
           fetchEvents();
           resetForm();
         });
     } else {
-      axios.post("http://localhost:8081/api/events", cleanData)
+      axios.post("https://prizeportal-admin-production.up.railway.app/api/events", cleanData)
         .then(() => {
           fetchEvents();
           resetForm();
@@ -86,7 +86,7 @@ function AdminPanel() {
   };
 
   const handleDelete = (id) => {
-    axios.delete(`http://localhost:8081/api/events/${id}`)
+    axios.delete(`https://prizeportal-admin-production.up.railway.app/api/events/${id}`)
       .then(() => fetchEvents());
   };
 
