@@ -7,7 +7,7 @@ import com.college.prizeportal.repository.EventRepository;
 
 @RestController
 @RequestMapping("/api/events")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "https://prizeportal-admin.vercel.app")
 public class EventController {
 
     private final EventRepository eventRepository;
