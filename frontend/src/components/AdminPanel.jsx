@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
+const API_BASE = process.env.REACT_APP_API_URL || "https://prizeportal-admin-production.up.railway.app/api/events";
+
 function AdminPanel() {
   const [events, setEvents] = useState([]);
   const [editId, setEditId] = useState(null);
@@ -17,9 +19,12 @@ function AdminPanel() {
   }, []);
 
   const fetchEvents = () => {
-    axios.get("https://prizeportal-admin-production.up.railway.app/api/events")
+    axios.get(API_BASE)
       .then(res => setEvents(res.data))
-      .catch(err => console.error(err));
+      .catch(err => {
+        console.error(err);
+        alert("Failed to fetch events. Please try again.");
+      });
   };
 
   // Handle text change for dynamic fields
@@ -60,19 +65,14 @@ function AdminPanel() {
       thirdPrize: formData.thirdPrize.filter(name => name.trim() !== "")
     };
 
-    if (editId) {
-      axios.put(`https://prizeportal-admin-production.up.railway.app/api/events/${editId}`, cleanData)
-        .then(() => {
-          fetchEvents();
-          resetForm();
-        });
-    } else {
-      axios.post("https://prizeportal-admin-production.up.railway.app/api/events", cleanData)
-        .then(() => {
-          fetchEvents();
-          resetForm();
-        });
-    }
+    const request = editId
+      ? axios.put(`${API_BASE}/${editId}`, cleanData)
+      : axios.post(API_BASE, cleanData);
+
+    request.then(() => {
+      fetchEvents();
+      resetForm();
+    }).catch(() => alert("Error saving event"));
   };
 
   const resetForm = () => {
@@ -86,8 +86,9 @@ function AdminPanel() {
   };
 
   const handleDelete = (id) => {
-    axios.delete(`https://prizeportal-admin-production.up.railway.app/api/events/${id}`)
-      .then(() => fetchEvents());
+    axios.delete(`${API_BASE}/${id}`)
+      .then(() => fetchEvents())
+      .catch(() => alert("Error deleting event"));
   };
 
   const handleEdit = (event) => {
@@ -102,11 +103,12 @@ function AdminPanel() {
 
   const renderPrizeInputs = (label, place) => (
     <div>
-      <label style={styles.label}>{label}</label>
+      <label style={styles.label} htmlFor={place}>{label}</label>
 
       {formData[place].map((value, index) => (
         <div key={index} style={styles.inputRow}>
           <input
+            id={`${place}-${index}`}
             type="text"
             value={value}
             onChange={(e) =>
@@ -197,14 +199,12 @@ const styles = {
     flexDirection: "column",
     alignItems: "center"
   },
-
   title: {
     fontSize: "30px",
     fontWeight: "600",
     marginBottom: "30px",
     color: "#1f2937"
   },
-
   form: {
     width: "100%",
     maxWidth: "550px",
@@ -217,20 +217,17 @@ const styles = {
     gap: "18px",
     marginBottom: "50px"
   },
-
   label: {
     fontSize: "14px",
     fontWeight: "500",
     marginBottom: "5px",
     color: "#374151"
   },
-
   inputRow: {
     display: "flex",
     gap: "8px",
     marginBottom: "8px"
   },
-
   input: {
     flex: 1,
     padding: "10px 14px",
@@ -238,7 +235,6 @@ const styles = {
     border: "1px solid #d1d5db",
     fontSize: "14px"
   },
-
   addBtn: {
     background: "#4f46e5",
     color: "white",
@@ -247,7 +243,6 @@ const styles = {
     borderRadius: "8px",
     cursor: "pointer"
   },
-
   removeBtn: {
     background: "#dc2626",
     color: "white",
@@ -256,7 +251,6 @@ const styles = {
     borderRadius: "8px",
     cursor: "pointer"
   },
-
   submitBtn: {
     background: "#111827",
     color: "white",
@@ -266,33 +260,28 @@ const styles = {
     fontWeight: "500",
     cursor: "pointer"
   },
-
   cardContainer: {
     width: "100%",
     maxWidth: "600px",
     display: "grid",
     gap: "20px"
   },
-
   card: {
     background: "#ffffff",
     padding: "20px",
     borderRadius: "14px",
     boxShadow: "0 6px 18px rgba(0,0,0,0.05)"
   },
-
   cardTitle: {
     fontSize: "18px",
     fontWeight: "600",
     marginBottom: "10px"
   },
-
   buttonRow: {
     marginTop: "15px",
     display: "flex",
     gap: "10px"
   },
-
   editBtn: {
     background: "#2563eb",
     color: "white",
@@ -301,7 +290,6 @@ const styles = {
     borderRadius: "8px",
     cursor: "pointer"
   },
-
   deleteBtn: {
     background: "#dc2626",
     color: "white",
