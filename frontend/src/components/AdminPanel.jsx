@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-const API_BASE = process.env.REACT_APP_API_URL || "https://prizeportal-admin-production.up.railway.app/api/events";
+const API_BASE =  "https://prizeportal-admin-production.up.railway.app/api/events";
 
 function AdminPanel() {
   const [events, setEvents] = useState([]);
